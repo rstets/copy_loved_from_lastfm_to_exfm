@@ -1,0 +1,7 @@
+[lastfm]
+api_key=<your api key here>
+api_secret=<your api secret here>
+username=<last.fm username here>
+[exfm]
+username=<exfm username>
+password=<exfm password>
