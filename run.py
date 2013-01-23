@@ -77,31 +77,44 @@ class ExFmTrack():
             title=self.track.title)
 
     def search(self):
-        import requests
-        search_url = "http://ex.fm/api/v3/song/search/{term}"
-        response = requests.get(search_url.format(
-            term=repr(self)
-        ))
-        import json
-        decoded = json.loads(response.text)
-        songs = decoded['songs']
-        if songs:
-            self.id = songs[0]['id']
-            print("search: ", self, ". found id: ", self.id)
+        """
+        Search for track on exfm by 'artist - title'
+        """
+        # TODO: Make some kind of API client for exfm maybe?
+        try:
+            import requests
+            search_url = "http://ex.fm/api/v3/song/search/{term}"
+            response = requests.get(search_url.format(
+                term=repr(self)
+            ))
+            import json
+            decoded = json.loads(response.text)
+            songs = decoded['songs']
+            if songs:
+                self.id = songs[0]['id']
+                print("search: ", self, ". found id: ", self.id)
+        except Exception as e:
+            print("error: ", e)
         return self
 
     def love(self):
-        if self.id:
-            love_url = "http://ex.fm/api/v3/song/{id}/love"
-            import requests
-            response = requests.post(love_url.format(id=self.id), data={
-                'username': App.config['exfm']['username'],
-                'password': App.config['exfm']['password']
-            })
-            import json
-            decoded = json.loads(response.text)
-            if decoded['status_code'] != 200:
-                print("code: ", decoded['status_code'], "text: ", decoded['status_text'])
+        """
+        Add a track to "loved" on ex.fm
+        """
+        try:
+            if self.id:
+                love_url = "http://ex.fm/api/v3/song/{id}/love"
+                import requests
+                response = requests.post(love_url.format(id=self.id), data={
+                    'username': App.config['exfm']['username'],
+                    'password': App.config['exfm']['password']
+                })
+                import json
+                decoded = json.loads(response.text)
+                if decoded['status_code'] != 200:
+                    print("code: ", decoded['status_code'], "text: ", decoded['status_text'])
+        except Exception as e:
+            print("error: ", e)
         return self
 
 

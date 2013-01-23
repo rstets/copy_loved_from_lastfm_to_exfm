@@ -7,7 +7,6 @@ Install dependencies:
 ====
 
 * brew install python3 (for Mac OS X. for Linux must be "<some-pkg-mgr> install python3")
-* pip3 install pylast
 * pip3 install requests
 
 Configure:
