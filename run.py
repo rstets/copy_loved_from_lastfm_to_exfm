@@ -113,6 +113,8 @@ class ExFmTrack():
                 decoded = json.loads(response.text)
                 if decoded['status_code'] != 200:
                     print("code: ", decoded['status_code'], "text: ", decoded['status_text'])
+                else:
+                    print("love!")
         except Exception as e:
             print("error: ", e)
         return self
