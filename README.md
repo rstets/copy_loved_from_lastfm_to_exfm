@@ -27,4 +27,4 @@ TODOs:
 * TODOs in code
 * Put it online
 * Something completely different
-* Most important is to add "page" param to pylast lib's "get_loved_tracks" call, because now it returns some first 50 loved tracks only and that is realy not cool.
+* Most important is to add "page" param to pylast lib's "get_loved_tracks" call, because now it returns some first 50 loved tracks only and that is really not cool.
