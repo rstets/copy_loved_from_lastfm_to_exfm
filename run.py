@@ -49,14 +49,14 @@ class LastFmTracks(Tracks, LastFmClient):
 
 class LastFmLovedTracks(LastFmTracks):
     def __init__(self, **kwargs):
-        self.size = 50
         super(LastFmLovedTracks, self).__init__(**kwargs)
 
 
     def get_tracks(self):
-        # TODO: Remove magic number
-        # TODO: Add paging. Requires 3rd-party library changes.
-        return self.user.get_loved_tracks(limit=self.size)
+        """
+        Retrieve all loved tracks.
+        """
+        return self.user.get_loved_tracks(limit=None)
 
 class Track():
     """
