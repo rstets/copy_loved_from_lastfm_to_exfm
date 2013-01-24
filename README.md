@@ -1,5 +1,5 @@
 lastfm2exfm
-===========
+===
 
 "Copy" last.fm loved tracks to ex.fm
 
@@ -28,4 +28,5 @@ TODOs:
 * More output
 * Allow user to select a correct track from search results
 * Skip/overwrite already processed tracks
+* Cache page/track number to retry/restart processing
 
