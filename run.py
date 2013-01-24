@@ -26,12 +26,12 @@ class LastFmTracks(Tracks, LastFmClient):
     Last.fm track collection.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, options, **kwargs):
         super(LastFmTracks, self).__init__(**kwargs)
-        self.collection = self.get_tracks()
+        self.collection = self.get_tracks(options)
 
     def __getitem__(self, item):
-        track = self.collection[item].track
+        track = self._get_track(item)
         return Track(
             title=track.title,
             artist=track.artist.name if isinstance(track.artist, pylast.Artist) else track.artist
@@ -40,10 +40,13 @@ class LastFmTracks(Tracks, LastFmClient):
     def __len__(self):
         return len(self.collection)
 
-    def get_tracks(self):
+    def get_tracks(self, options):
         """
         Abstract get track list.
         """
+        raise NotImplementedError
+
+    def _get_track(self, item):
         raise NotImplementedError
 
 
@@ -51,23 +54,29 @@ class LastFmLovedTracks(LastFmTracks):
     def __init__(self, **kwargs):
         super(LastFmLovedTracks, self).__init__(**kwargs)
 
+    def _get_track(self, item):
+        return self.collection[item].track
 
-    def get_tracks(self):
+    def get_tracks(self, options):
         """
         Retrieve all loved tracks.
         """
-        return self.user.get_loved_tracks(limit=None)
+        print("limit:", options['limit'])
+        return self.user.get_loved_tracks(limit=options['limit'])
 
 class LastFmLibraryTracks(LastFmTracks):
     def __init__(self, **kwargs):
         super(LastFmLibraryTracks, self).__init__(**kwargs)
 
+    def _get_track(self, item):
+        return self.collection[item].item
 
-    def get_tracks(self):
+    def get_tracks(self, options):
         """
         Retrieve all loved tracks.
         """
-        return self.user.get_library().get_tracks(limit=None)
+        print("limit:", options['limit'])
+        return self.user.get_library().get_tracks(limit=options['limit'])
 
 class Track():
     """
@@ -143,15 +152,25 @@ class App():
     @classmethod
     def run(cls, args):
         cls.load_config()
-        [ExFmTrack(track).search().love() for track in App.collect_tracks(source=args.source)]
+        [ExFmTrack(track).search().love() for track in App.collect_tracks(source=args.source, limit=args.limit)]
 
     @classmethod
-    def collect_tracks(cls, source):
+    def collect_tracks(cls, source, limit=None):
         params = {
             'api_key': cls.config['lastfm']['api_key'],
             'api_secret': cls.config['lastfm']['api_secret'],
-            'username': cls.config['lastfm']['username']
+            'username': cls.config['lastfm']['username'],
+            'options': {
+                'limit': None
+            }
         }
+
+        if limit is not None:
+            try:
+                params['options']['limit'] = int(limit)
+            except Exception as e:
+                print("cast error:", e)
+
         if source == "loved":
             collection = cls._collection_factory(LastFmLovedTracks, params)
         elif source == "library":
@@ -172,6 +191,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-s", "--source", dest = "source", default = "loved", help="Last.fm track source")
+    parser.add_argument("-l", "--limit", dest = "limit", default = None, help="Number of tracks to process")
     args = parser.parse_args()
 
     App.run(args)

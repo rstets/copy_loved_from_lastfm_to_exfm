@@ -3508,29 +3508,37 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
     nodes = []
     page = 1
     end_of_pages = False
-    
+
+    print("method_name:", method_name)
+    print("params:", params)
+
     while not end_of_pages and (not limit or (limit and len(nodes) < limit)):
-        params["page"] = str(page)
-        doc = sender._request(method_name, cacheable, params)
-        
-        main = doc.documentElement.childNodes[1]
-        
-        if main.hasAttribute("totalPages"):
-            total_pages = _number(main.getAttribute("totalPages"))
-        elif main.hasAttribute("totalpages"):
-            total_pages = _number(main.getAttribute("totalpages"))
-        else:
-            raise Exception("No total pages attribute")
-        
-        for node in main.childNodes:
-            if not node.nodeType == xml.dom.Node.TEXT_NODE and (not limit or len(nodes) < limit):
-                nodes.append(node)
-        
+        try:
+            params["page"] = str(page)
+            doc = sender._request(method_name, cacheable, params)
+
+            main = doc.documentElement.childNodes[1]
+
+            if main.hasAttribute("totalPages"):
+                total_pages = _number(main.getAttribute("totalPages"))
+            elif main.hasAttribute("totalpages"):
+                total_pages = _number(main.getAttribute("totalpages"))
+            else:
+                raise Exception("No total pages attribute")
+
+            print("page:", page, "/", total_pages)
+
+            for node in main.childNodes:
+                if not node.nodeType == xml.dom.Node.TEXT_NODE and (not limit or len(nodes) < limit):
+                    nodes.append(node)
+
+        except MalformedResponseError as e:
+            print("pylast error: ", e)
+
         if page >= total_pages:
             end_of_pages = True
-        
+
         page += 1
-    
     return nodes
     
 def _extract(node, name, index = 0):
