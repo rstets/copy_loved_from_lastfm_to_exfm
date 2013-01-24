@@ -58,6 +58,17 @@ class LastFmLovedTracks(LastFmTracks):
         """
         return self.user.get_loved_tracks(limit=None)
 
+class LastFmLibraryTracks(LastFmTracks):
+    def __init__(self, **kwargs):
+        super(LastFmLibraryTracks, self).__init__(**kwargs)
+
+
+    def get_tracks(self):
+        """
+        Retrieve all loved tracks.
+        """
+        return self.user.get_library().get_tracks(limit=None)
+
 class Track():
     """
     Abstract track interface
@@ -130,18 +141,25 @@ class App():
         cls.config.read('config.ini')
 
     @classmethod
-    def run(cls):
+    def run(cls, args):
         cls.load_config()
-        [ExFmTrack(track).search().love() for track in App.collect_tracks()]
+        [ExFmTrack(track).search().love() for track in App.collect_tracks(source=args.source)]
 
     @classmethod
-    def collect_tracks(cls):
+    def collect_tracks(cls, source):
         params = {
             'api_key': cls.config['lastfm']['api_key'],
             'api_secret': cls.config['lastfm']['api_secret'],
             'username': cls.config['lastfm']['username']
         }
-        collection = cls._collection_factory(LastFmLovedTracks, params)
+        if source == "loved":
+            collection = cls._collection_factory(LastFmLovedTracks, params)
+        elif source == "library":
+            collection = cls._collection_factory(LastFmLibraryTracks, params)
+        else:
+            print("Set --source=loved|library")
+            return []
+
         return [track for track in collection]
 
     @classmethod
@@ -149,4 +167,11 @@ class App():
         return collection_class(**params)
 
 if __name__ == "__main__":
-    App.run()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-s", "--source", dest = "source", default = "loved", help="Last.fm track source")
+    args = parser.parse_args()
+
+    App.run(args)

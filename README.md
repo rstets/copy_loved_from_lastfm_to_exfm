@@ -18,7 +18,7 @@ Configure:
 Run:
 ====
 
-* python3 ./move.py
+* python3 ./move.py --source=loved|library
 
 TODOs:
 ====
