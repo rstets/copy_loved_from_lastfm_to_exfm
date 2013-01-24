@@ -28,3 +28,4 @@ TODOs:
 * More output
 * Less memory footprint (process in batches — do not fetch all the tracks from library)
 * Allow user to select a correct track from search results
+* Skip/overwrite already processed tracks
