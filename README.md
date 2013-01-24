@@ -23,6 +23,8 @@ Run:
 TODOs:
 ====
 * Refactoring
-* TODOs in code
 * Put it online
 * Something completely different
+* More output
+* Less memory footprint (process in batches — do not fetch all the tracks from library)
+* Allow user to select a correct track from search results
