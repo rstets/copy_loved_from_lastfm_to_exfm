@@ -6,7 +6,7 @@ lastfm2exfm
 Install dependencies:
 ====
 
-* brew install python3 (for Mac OS X. for Linux must be "<some-pkg-mgr> install python3")
+* brew install python3 (for Mac OS X. for Linux must be "'some-pkg-mgr' install python3")
 * pip3 install requests
 
 Configure:
