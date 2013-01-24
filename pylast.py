@@ -2026,17 +2026,14 @@ class Library(_BaseObject):
         if album:
             params["album"] = album
         
-        seq = []
         for node in _collect_nodes(limit, self, "library.getTracks", True, params):
             name = _extract(node, "name")
             artist = _extract(node, "name", 1)
             playcount = _number(_extract(node, "playcount"))
             tagcount = _number(_extract(node, "tagcount"))
             
-            seq.append(LibraryItem(Track(artist, name, self.network), playcount, tagcount))
-        
-        return seq
-            
+            yield LibraryItem(Track(artist, name, self.network), playcount, tagcount)
+
 
 class Playlist(_BaseObject):
     """A Last.fm user playlist."""
@@ -2824,7 +2821,6 @@ class User(_BaseObject):
         if limit:
             params['limit'] = limit
         
-        seq = []
         for track in _collect_nodes(limit, self, "user.getLovedTracks", True, params):
                 
             title = _extract(track, "name")
@@ -2832,10 +2828,8 @@ class User(_BaseObject):
             date = _extract(track, "date")
             timestamp = track.getElementsByTagName("date")[0].getAttribute("uts")
                 
-            seq.append(LovedTrack(Track(artist, title, self.network), date, timestamp))
-        
-        return seq
-    
+            yield LovedTrack(Track(artist, title, self.network), date, timestamp)
+
     def get_neighbours(self, limit = 50):
         """Returns a list of the user's friends."""
         
@@ -3508,6 +3502,7 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
     nodes = []
     page = 1
     end_of_pages = False
+    total_pages = 0
 
     print("method_name:", method_name)
     print("params:", params)
@@ -3530,7 +3525,7 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
 
             for node in main.childNodes:
                 if not node.nodeType == xml.dom.Node.TEXT_NODE and (not limit or len(nodes) < limit):
-                    nodes.append(node)
+                    yield node
 
         except MalformedResponseError as e:
             print("pylast error: ", e)
@@ -3539,8 +3534,7 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
             end_of_pages = True
 
         page += 1
-    return nodes
-    
+
 def _extract(node, name, index = 0):
     """Extracts a value from the xml string"""
     

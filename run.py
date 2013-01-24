@@ -3,15 +3,16 @@
 """
 Dependencies: python3, pylast, requests
 """
-from collections import Sequence
+from collections import Iterable, Iterator
 import pylast
 
 
-class Tracks(Sequence):
+class Tracks(Iterator):
     """
     Abstract track collection.
     """
-    pass
+    def __next__(self):
+        raise NotImplementedError
 
 class LastFmClient():
     def __init__(self, api_key, api_secret, username):
@@ -30,15 +31,8 @@ class LastFmTracks(Tracks, LastFmClient):
         super(LastFmTracks, self).__init__(**kwargs)
         self.collection = self.get_tracks(options)
 
-    def __getitem__(self, item):
-        track = self._get_track(item)
-        return Track(
-            title=track.title,
-            artist=track.artist.name if isinstance(track.artist, pylast.Artist) else track.artist
-        )
-
-    def __len__(self):
-        return len(self.collection)
+    def __next__(self):
+        raise NotImplementedError
 
     def get_tracks(self, options):
         """
@@ -46,16 +40,20 @@ class LastFmTracks(Tracks, LastFmClient):
         """
         raise NotImplementedError
 
-    def _get_track(self, item):
-        raise NotImplementedError
+    def _get_track(self):
+        track = next(self)
+        return Track(
+            title=track.title,
+            artist=track.artist.name if isinstance(track.artist, pylast.Artist) else track.artist
+        )
 
 
 class LastFmLovedTracks(LastFmTracks):
     def __init__(self, **kwargs):
         super(LastFmLovedTracks, self).__init__(**kwargs)
 
-    def _get_track(self, item):
-        return self.collection[item].track
+    def __next__(self):
+        return next(self.collection).track
 
     def get_tracks(self, options):
         """
@@ -68,8 +66,8 @@ class LastFmLibraryTracks(LastFmTracks):
     def __init__(self, **kwargs):
         super(LastFmLibraryTracks, self).__init__(**kwargs)
 
-    def _get_track(self, item):
-        return self.collection[item].item
+    def __next__(self):
+        return next(self.collection).item
 
     def get_tracks(self, options):
         """
@@ -152,7 +150,8 @@ class App():
     @classmethod
     def run(cls, args):
         cls.load_config()
-        [ExFmTrack(track).search().love() for track in App.collect_tracks(source=args.source, limit=args.limit)]
+        collection = App.collect_tracks(source=args.source, limit=args.limit)
+        [ExFmTrack(track).search().love() for track in collection]
 
     @classmethod
     def collect_tracks(cls, source, limit=None):
@@ -179,7 +178,7 @@ class App():
             print("Set --source=loved|library")
             return []
 
-        return [track for track in collection]
+        return collection
 
     @classmethod
     def _collection_factory(cls, collection_class, params):
