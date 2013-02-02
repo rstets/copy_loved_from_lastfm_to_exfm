@@ -39,8 +39,7 @@ class LastFmTracks(Tracks, LastFmClient):
         """
         raise NotImplementedError
 
-    def _get_track(self):
-        track = next(self)
+    def _get_track(self, track):
         return Track(
             title=track.title,
             artist=track.artist.name if isinstance(track.artist, pylast.Artist) else track.artist
@@ -52,7 +51,7 @@ class LastFmLovedTracks(LastFmTracks):
         super(LastFmLovedTracks, self).__init__(**kwargs)
 
     def __next__(self):
-        return next(self.collection).track
+        return self._get_track(next(self.collection).track)
 
     def get_tracks(self):
         """
@@ -66,7 +65,7 @@ class LastFmLibraryTracks(LastFmTracks):
         super(LastFmLibraryTracks, self).__init__(**kwargs)
 
     def __next__(self):
-        return next(self.collection).item
+        return self._get_track(next(self.collection).item)
 
     def get_tracks(self):
         """
