@@ -748,7 +748,7 @@ class _Request(object):
         return md5(string)
     
     def _get_cache_key(self):
-        """The cache key is a string of concatenated sorted names and values."""
+        """The core key is a string of concatenated sorted names and values."""
         
         keys = list(self.params.keys())
         keys.sort()
@@ -771,7 +771,7 @@ class _Request(object):
         return self.cache.get_xml(self._get_cache_key())
     
     def _is_cached(self):
-        """Returns True if the request is already in cache."""
+        """Returns True if the request is already in core."""
         
         return self.cache.has_key(self._get_cache_key())
         
