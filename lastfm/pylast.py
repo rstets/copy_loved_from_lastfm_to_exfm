@@ -2019,7 +2019,6 @@ class Library(_BaseObject):
         Returns a sequence of Album objects
         If limit==None it will return all (may take a while)
         """
-        
         params = self._get_params()
         if artist:
             params["artist"] = artist
@@ -3506,8 +3505,9 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
     print("="*80)
     print("method_name:", method_name)
     print("params:", params)
-
-    while not end_of_pages and (not limit or (limit and len(nodes) < limit)):
+    print("limit:", limit)
+    counter = 0
+    while not end_of_pages and (not limit or (limit and counter < limit)):
         try:
             params["page"] = str(page)
             doc = sender._request(method_name, cacheable, params)
@@ -3524,7 +3524,9 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
             print("page:", page, "/", total_pages)
 
             for node in main.childNodes:
-                if not node.nodeType == xml.dom.Node.TEXT_NODE and (not limit or len(nodes) < limit):
+                if not node.nodeType == xml.dom.Node.TEXT_NODE and (not limit or counter < limit):
+                    print("counter:", counter)
+                    counter += 1
                     yield node
 
         except MalformedResponseError as e:
