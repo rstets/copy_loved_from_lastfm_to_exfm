@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from .utils import get_importer
 from urllib.parse import urlencode
+import json
 
 
 def index(request, importer_name=None):
@@ -23,12 +24,13 @@ def index(request, importer_name=None):
 def playlists(request, importer_name):
     importer = get_importer(importer_name)(request.GET)
     playlists = importer.get_playlists()
+    songs = importer.get_songs()
     return render_to_response('extractor/playlists.html', {
-        'playlists': playlists
+        'playlists': playlists,
+        'songs': songs
     })
 
 
 def songs(request):
-    #, importer_name):
-    #importer = get_importer(importer_name)(request.GET)
-    return HttpResponse('{}')
+    songs = {}
+    return HttpResponse(json.dumps(songs))
