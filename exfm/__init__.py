@@ -14,23 +14,28 @@ class ExFmClient():
         self.password = password
 
     def search_by_title(self, title):
-        print("searching: " + title)
+        (t, a) = title.split(" - ")
+        track = Track(title=t, artist=a)
+        return self.search_by_track(track)
+
+    def search_by_track(self, track):
+        print("searching: " + repr(track))
         try:
             search_url = "http://ex.fm/api/v3/song/search/{term}"
             response = requests.get(search_url.format(
-                term=title
+                term=track.title
             ))
             decoded = json.loads(response.text)
             songs = decoded['songs']
             if songs:
-                id = songs[0]['id']
                 print("found: %d songs. fetching first id: %s" % (len(songs), id))
-                return id
+                for song in songs:
+                    if song['artist'] == track.artist:
+                        return song['id']
             else:
                 print("not found!")
         except Exception as e:
             print("error: ", e)
-            return None
 
     def add_to_loved_tracks(self, id):
         try:
@@ -63,7 +68,7 @@ class ExFmTracks(Tracks, ExFmClient):
         """
         Search for track on exfm by 'artist - title'
         """
-        id = self.search_by_title(title=repr(track))
+        id = self.search_by_track(track=track)
         if id:
             track.id = id
         return track
