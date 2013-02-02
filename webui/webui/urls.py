@@ -5,8 +5,9 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'^$', 'extractor.views.index', name='index'),
+    url(r'^playlists$', 'extractor.views.playlists', name='playlists'),
+    url(r'^songs$', 'extractor.views.songs', name='songs')
     # url(r'^webui/', include('webui.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

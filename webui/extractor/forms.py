@@ -1,6 +1,8 @@
 from django import forms
 
+
 class LastFMSourceForm(forms.Form):
-    api_key = forms.CharField()
-    api_secret = forms.CharField()
+    SOURCE_TITLE = 'LastFM source extractor'
+
     username = forms.CharField()
+    limit = forms.CharField()
