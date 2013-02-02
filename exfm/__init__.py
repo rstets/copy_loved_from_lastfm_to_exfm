@@ -16,6 +16,7 @@ class ExFmClient():
     def search_by_title(self, title):
         (t, a) = title.split(" - ")
         track = Track(title=t, artist=a)
+        print("search: ", track)
         return self.search_by_track(track)
 
     def search_by_track(self, track):
@@ -28,7 +29,6 @@ class ExFmClient():
             decoded = json.loads(response.text)
             songs = decoded['songs']
             if songs:
-                print("found: %d songs. fetching first id: %s" % (len(songs), id))
                 for song in songs:
                     if song['artist'] == track.artist:
                         return song['id']
