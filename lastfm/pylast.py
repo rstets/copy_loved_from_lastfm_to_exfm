@@ -3492,10 +3492,9 @@ def _string(text):
 
 def _collect_nodes(limit, sender, method_name, cacheable, params=None):
     """
-        Returns a sequqnce of dom.Node objects about as close to
+        Returns a sequence of dom.Node objects about as close to
         limit as possible
     """
-    
     if not params:
         params = sender._get_params()
     
@@ -3504,6 +3503,7 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
     end_of_pages = False
     total_pages = 0
 
+    print("="*80)
     print("method_name:", method_name)
     print("params:", params)
 

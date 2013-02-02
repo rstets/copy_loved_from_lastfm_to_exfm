@@ -3,11 +3,11 @@
 Last.fm wrappers.
 """
 
-import pylast
+from lastfm import pylast
 from core import Track, Tracks
 
 class LastFmClient():
-    def __init__(self, api_key, api_secret, username):
+    def __init__(self, api_key, api_secret, username, **kwargs):
         self.network = pylast.LastFMNetwork(
             api_key=api_key,
             api_secret=api_secret
@@ -15,24 +15,25 @@ class LastFmClient():
         self.user = pylast.User(user_name=username, network=self.network)
 
     def get_loved_tracks(self, **kwargs):
-        return self.user.get_loved_tracks(kwargs)
+        return self.user.get_loved_tracks(**kwargs)
 
     def get_library_tracks(self, **kwargs):
-        return self.user.get_library().get_tracks(kwargs)
+        return self.user.get_library().get_tracks(**kwargs)
 
 
 class LastFmTracks(Tracks, LastFmClient):
     """
     Last.fm track collection.
     """
-    def __init__(self, options, **kwargs):
-        super(LastFmTracks, self).__init__(**kwargs)
-        self.collection = self.get_tracks(options)
+    def __init__(self, **kwargs):
+        Tracks.__init__(self, **kwargs)
+        LastFmClient.__init__(self, **kwargs)
+        self.collection = self.get_tracks()
 
     def __next__(self):
         raise NotImplementedError
 
-    def get_tracks(self, options):
+    def get_tracks(self):
         """
         Abstract get track list.
         """
@@ -53,12 +54,12 @@ class LastFmLovedTracks(LastFmTracks):
     def __next__(self):
         return next(self.collection).track
 
-    def get_tracks(self, options):
+    def get_tracks(self):
         """
         Retrieve all loved tracks.
         """
-        print("limit:", options['limit'])
-        return self.get_loved_tracks(limit=options['limit'])
+        print("limit:", self.limit)
+        return self.get_loved_tracks(limit=self.limit)
 
 class LastFmLibraryTracks(LastFmTracks):
     def __init__(self, **kwargs):
@@ -67,9 +68,9 @@ class LastFmLibraryTracks(LastFmTracks):
     def __next__(self):
         return next(self.collection).item
 
-    def get_tracks(self, options):
+    def get_tracks(self):
         """
         Retrieve all loved tracks.
         """
-        print("limit:", options['limit'])
-        return self.get_library_tracks(limit=options['limit'])
+        print("limit:", self.limit)
+        return self.get_library_tracks(limit=self.limit)
