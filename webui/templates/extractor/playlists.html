@@ -2,4 +2,12 @@
 
 {% block content %}
 Playlists
+<select id="playlist">
+    {% for id, name in playlists %}
+    <option value="{{ id }}">{{ name }}</option>
+    {% endfor %}
+</select>
+
+{% include 'extractor/songs.html' %}
+
 {% endblock content %}

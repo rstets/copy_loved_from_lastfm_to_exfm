@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from .utils import get_importer
@@ -22,9 +22,13 @@ def index(request, importer_name=None):
 
 def playlists(request, importer_name):
     importer = get_importer(importer_name)(request.GET)
-    return render_to_response('extractor/playlists.html')
+    playlists = importer.get_playlists()
+    return render_to_response('extractor/playlists.html', {
+        'playlists': playlists
+    })
 
 
-def songs(request, importer_name):
-    importer = get_importer(importer_name)(request.GET)
-    return render_to_response('extractor/songs.html')
+def songs(request):
+    #, importer_name):
+    #importer = get_importer(importer_name)(request.GET)
+    return HttpResponse('{}')

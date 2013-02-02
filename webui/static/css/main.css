@@ -21,3 +21,22 @@ ul.errorlist {
 ul.errorlist li {
     color: red;
 }
+
+table#songs {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table#songs th {
+    font-size: 9pt;
+    text-align: left;
+    padding: 4px 8px 4px 8px;
+    background: #334;
+    color: #ddd;
+}
+
+table#songs td {
+    font-size: 9pt;
+    padding: 4px 8px 4px 8px;
+    border-bottom: 1px solid 334;
+}
