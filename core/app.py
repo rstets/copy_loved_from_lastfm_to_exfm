@@ -1,19 +1,22 @@
 # coding=utf-8
+
 class App():
     def __init__(self):
         self.collection_importer = None
         self.collection_importer_params = None
-        self.track_exporter = None
-        self.track_exporter_params = None
+        self.collection_exporter = None
+        self.collection_exporter_params = None
 
     def run(self):
-        [self._track_factory(self.track_exporter, track, self.track_exporter_params).search().add() for track in self.collection()]
+        exporter = self.collection_exporter(**self.collection_exporter_params)
+        for track in self.collection():
+            track_params = {'title': track.title, 'artist': track.artist}
+            track = exporter.create_track(**track_params)
+            exporter.search(track)
+            exporter.add(track)
 
     def collection(self):
-        return self._collection_factory(self.collection_importer, self.collection_importer_params)
+        return self.collection_importer(**self.collection_importer_params)
 
-    def _collection_factory(self, collection_class, params):
-        return collection_class(**params)
-
-    def _track_factory(self, track_exporter, track, params):
-        pass
+    def _track_factory(self, track_exporter, **params):
+        return track_exporter(**params)

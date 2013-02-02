@@ -3,6 +3,7 @@
 """
 Dependencies: python3, pylast, requests
 """
+from grooveshark import GrooveSharkTrack, GrooveSharkTracks
 
 if __name__ == "__main__":
     import argparse
@@ -10,7 +11,7 @@ if __name__ == "__main__":
 
     from core.app import App
     from lastfm import LastFmLovedTracks, LastFmLibraryTracks
-    from exfm import ExFmTrack
+    from exfm import ExFmTrack, ExFmTracks
 
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -20,10 +21,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-s", "--source", dest = "source", default = "loved", help="Last.fm track source")
+    parser.add_argument("-d", "--dest", dest = "dest", default = "exfm", help="Track destination: exfm|grooveshark. Default exfm")
     parser.add_argument("-l", "--limit", dest = "limit", default = None, help="Number of tracks to process")
     args = parser.parse_args()
 
     source = args.source
+    dest= args.dest
     limit = args.limit
     if source == "loved":
         app.collection_importer = LastFmLovedTracks
@@ -37,21 +40,30 @@ if __name__ == "__main__":
         'api_key': config['lastfm']['api_key'],
         'api_secret': config['lastfm']['api_secret'],
         'username': config['lastfm']['username'],
-        'options': {
-            'limit': None
-        }
+        'limit': None
     }
 
     if limit is not None:
         try:
-            app.collection_importer_params['options']['limit'] = int(limit)
+            app.collection_importer_params['limit'] = int(limit)
         except Exception as e:
             print("invalid limit:", e)
 
-    app.track_exporter = ExFmTrack
-    app.track_exporter_params = {
-        'username': config['exfm']['username'],
-        'password': config['exfm']['password'],
-    }
+    if dest == "grooveshark":
+        app.collection_exporter = GrooveSharkTracks
+        app.collection_exporter_params = {
+            'api_key': config['grooveshark']['api_key'],
+            'api_secret': config['grooveshark']['api_secret'],
+            'username': config['grooveshark']['username'],
+            'password': config['grooveshark']['password'],
+            'limit': None
+        }
+    else:
+        app.collection_exporter = ExFmTracks
+        app.collection_exporter_params = {
+            'username': config['exfm']['username'],
+            'password': config['exfm']['password'],
+            'limit': None
+        }
 
     app.run()

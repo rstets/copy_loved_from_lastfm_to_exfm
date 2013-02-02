@@ -6,24 +6,31 @@ Ex.fm wrappers
 import requests
 import json
 
-from core import Track
+from core import Track, Tracks
 
 class ExFmClient():
-    def __init__(self, username, password):
+    def __init__(self, username, password, **kwargs):
         self.username = username
         self.password = password
 
     def search_by_title(self, title):
+        print("searching: " + title)
         try:
             search_url = "http://ex.fm/api/v3/song/search/{term}"
             response = requests.get(search_url.format(
                 term=title
             ))
             decoded = json.loads(response.text)
-            return decoded['songs']
+            songs = decoded['songs']
+            if songs:
+                id = songs[0]['id']
+                print("found: %d songs. fetching first id: %s" % (len(songs), id))
+                return id
+            else:
+                print("not found!")
         except Exception as e:
             print("error: ", e)
-            return []
+            return None
 
     def add_to_loved_tracks(self, id):
         try:
@@ -37,34 +44,39 @@ class ExFmClient():
                 if decoded['status_code'] != 200:
                     print("code: ", decoded['status_code'], "text: ", decoded['status_text'])
                 else:
-                    print("love!")
+                    print("added: " + id)
         except Exception as e:
             print("error: ", e)
 
-class ExFmTrack(Track, ExFmClient):
-    def __init__(self, track, **kwargs):
-        super(ExFmTrack, self).__init__(**kwargs)
-        self.track = track
-        self.id = None
+class ExFmTracks(Tracks, ExFmClient):
+    """
+    GrooveShark track collection.
+    """
+    def __init__(self, **kwargs):
+        Tracks.__init__(self, **kwargs)
+        ExFmClient.__init__(self, **kwargs)
 
-    def __repr__(self):
-        return "{artist} - {title}".format(
-            artist=self.track.artist,
-            title=self.track.title)
+    def create_track(self, **kwargs):
+        return ExFmTrack(**kwargs)
 
-    def search(self):
+    def search(self, track):
         """
         Search for track on exfm by 'artist - title'
         """
-        songs = self.search_by_title(title=repr(self))
-        if songs:
-            self.id = songs[0]['id']
-            print("search: ", self, ". found id: ", self.id)
-        return self
+        id = self.search_by_title(title=repr(track))
+        if id:
+            track.id = id
+        return track
 
-    def add(self):
+    def add(self, track):
         """
         Add a track to "loved" on ex.fm
         """
-        self.add_to_loved_tracks(id=self.id)
-        return self
+        self.add_to_loved_tracks(id=track.id)
+        return track
+
+
+class ExFmTrack(Track):
+    def __init__(self, **kwargs):
+        Track.__init__(self, **kwargs)
+        self.id = None
