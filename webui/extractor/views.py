@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, redirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from .utils import get_importer
+from .utils import get_importer, get_exporter
 from urllib.parse import urlencode
 import json
 
@@ -29,6 +29,18 @@ def playlists(request, importer_name):
         'playlists': playlists,
         'songs': songs
     })
+
+
+def search(request):
+    exporter = get_exporter(exporter_name="exfm")(request.POST)
+    id = exporter.search()
+    return HttpResponse(json.dumps({'result': id}))
+
+
+def process(request):
+    exporter = get_exporter(exporter_name="exfm")(request.POST)
+    msg = exporter.export()
+    return HttpResponse(json.dumps({'result': msg}))
 
 
 def songs(request):

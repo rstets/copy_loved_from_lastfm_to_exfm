@@ -7,7 +7,9 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^$', 'extractor.views.index', name='index'),
     url(r'^playlists/(?P<importer_name>\w+)$', 'extractor.views.playlists', name='playlists'),
-    url(r'^songs$', 'extractor.views.songs', name='songs')
+    url(r'^songs$', 'extractor.views.songs', name='songs'),
+    url(r'^search$', 'extractor.views.search', name='search'),
+    url(r'^process$', 'extractor.views.process', name='process')
     # url(r'^webui/', include('webui.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
