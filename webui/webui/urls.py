@@ -6,7 +6,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     url(r'^$', 'extractor.views.index', name='index'),
-    url(r'^playlists$', 'extractor.views.playlists', name='playlists'),
+    url(r'^playlists/(?P<importer_name>\w+)$', 'extractor.views.playlists', name='playlists'),
     url(r'^songs$', 'extractor.views.songs', name='songs')
     # url(r'^webui/', include('webui.foo.urls')),
 
