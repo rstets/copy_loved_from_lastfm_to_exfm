@@ -1,0 +1,42 @@
+body {
+    background-image: -ms-linear-gradient(top, #112222 0%, #556666 100%);
+    background-image: -moz-linear-gradient(top, #112222 0%, #556666 100%);
+    background-image: -o-linear-gradient(top, #112222 0%, #556666 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #112222), color-stop(1, #556666));
+    background-image: -webkit-linear-gradient(top, #112222 0%, #556666 100%);
+    background-image: linear-gradient(to bottom, #112222 0%, #556666 100%);
+
+
+    font-family: tahoma;
+    font-size: 11pt;
+}
+
+ul.errorlist {
+    float: right;
+    padding: 0;
+    margin: 0;
+    margin-left: 100px
+}
+
+ul.errorlist li {
+    color: red;
+}
+
+table#songs {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table#songs th {
+    font-size: 9pt;
+    text-align: left;
+    padding: 4px 8px 4px 8px;
+    background: #334;
+    color: #ddd;
+}
+
+table#songs td {
+    font-size: 9pt;
+    padding: 4px 8px 4px 8px;
+    border-bottom: 1px solid 334;
+}

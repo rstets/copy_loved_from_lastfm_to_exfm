@@ -42,10 +42,13 @@ class ExFmClient():
                 decoded = json.loads(response.text)
                 if decoded['status_code'] != 200:
                     print("code: ", decoded['status_code'], "text: ", decoded['status_text'])
+                    return decoded['status_text']
                 else:
                     print("added: " + id)
+                    return "added"
         except Exception as e:
             print("error: ", e)
+            return e
 
 class ExFmTracks(Tracks, ExFmClient):
     """

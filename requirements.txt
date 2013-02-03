@@ -1,0 +1,2 @@
+requests
+-e git+git://github.com/django/django@stable/1.5.x#egg=django

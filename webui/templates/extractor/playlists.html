@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<form onsubmit="return false">
+Playlists
+<select id="playlist">
+    {% for id, name in playlists %}
+    <option value="{{ id }}">{{ name }}</option>
+    {% endfor %}
+</select>
+</form>
+{% include 'extractor/songs.html' %}
+
+
+<script>
+$(function() {
+  $('input[type=checkbox].song').on('click', function(e) {
+    var song = $(this).val();
+    var cell = $(this).parent();
+    cell.html('searching...');
+    $.post('/search', {'song': song},
+        function(d) {
+          if (d.result != null) {
+            cell.html('processing...');
+            $.post('/process', {'id':d.result}, function(res) {
+              cell.html(res.result);
+            }, "json")
+            .fail(function(e) {
+              console.log(e);
+              cell.html('failed.')
+            });
+          } else {
+            cell.html('not found.');
+          }
+        }, "json")
+        .fail(function(e) {
+          cell.html('failed.')
+        });
+
+  });
+});
+</script>
+
+{% endblock content %}
