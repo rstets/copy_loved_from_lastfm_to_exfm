@@ -65,7 +65,7 @@ class ExFmTracks(Tracks, ExFmClient):
         """
         Search for track on exfm by 'artist - title'
         """
-        id = self.search_by_title(title=track)
+        id = self.search_by_title(title=repr(track))
         if id:
             track.id = id
         return track

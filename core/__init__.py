@@ -24,7 +24,7 @@ class Track():
         self.artist = artist
 
     def __repr__(self):
-        return "{artist} - {title}".format(
+        return "{artist} {title}".format(
             artist=self.artist,
             title=self.title)
 
