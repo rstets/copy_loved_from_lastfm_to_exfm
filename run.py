@@ -23,11 +23,13 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--source", dest = "source", default = "loved", help="Last.fm track source")
     # parser.add_argument("-d", "--dest", dest = "dest", default = "exfm", help="Track destination: exfm. Default exfm")
     parser.add_argument("-l", "--limit", dest = "limit", default = None, help="Number of tracks to process")
+    parser.add_argument("-r", "--resume", dest = "resume", default = True, help="Resume import from the same page.")
     args = parser.parse_args()
 
     source = args.source
     # dest = args.dest
     limit = args.limit
+    resume = args.resume
     if source == "loved":
         app.collection_importer = LastFmLovedTracks
     elif source == "library":
@@ -40,14 +42,9 @@ if __name__ == "__main__":
         'api_key': config['lastfm']['api_key'],
         'api_secret': config['lastfm']['api_secret'],
         'username': config['lastfm']['username'],
-        'limit': None
+        'limit': int(limit or 0) or None,
+        'resume': resume
     }
-
-    if limit is not None:
-        try:
-            app.collection_importer_params['limit'] = int(limit)
-        except Exception as e:
-            print("invalid limit:", e)
 
     # if dest == "grooveshark":
     #     app.collection_exporter = GrooveSharkTracks

@@ -7,18 +7,19 @@ from lastfm import pylast
 from core import Track, Tracks
 
 class LastFmClient():
-    def __init__(self, api_key, api_secret, username, **kwargs):
+    def __init__(self, api_key, api_secret, username, resume=True, **kwargs):
         self.network = pylast.LastFMNetwork(
             api_key=api_key,
             api_secret=api_secret
         )
         self.user = pylast.User(user_name=username, network=self.network)
+        self.resume = resume
 
     def get_loved_tracks(self, **kwargs):
-        return self.user.get_loved_tracks(**kwargs)
+        return self.user.get_loved_tracks(resume=self.resume, **kwargs)
 
     def get_library_tracks(self, **kwargs):
-        return self.user.get_library().get_tracks(**kwargs)
+        return self.user.get_library().get_tracks(resume=self.resume, **kwargs)
 
 
 class LastFmTracks(Tracks, LastFmClient):

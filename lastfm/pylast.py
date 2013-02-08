@@ -2014,7 +2014,7 @@ class Library(_BaseObject):
         
         return seq
 
-    def get_tracks(self, artist=None, album=None, limit=50):
+    def get_tracks(self, artist=None, album=None, limit=50, resume=True):
         """
         Returns a sequence of Album objects
         If limit==None it will return all (may take a while)
@@ -2024,8 +2024,8 @@ class Library(_BaseObject):
             params["artist"] = artist
         if album:
             params["album"] = album
-        
-        for node in _collect_nodes(limit, self, "library.getTracks", True, params):
+
+        for node in _collect_nodes(limit, self, "library.getTracks", True, params, resume):
             name = _extract(node, "name")
             artist = _extract(node, "name", 1)
             playcount = _number(_extract(node, "playcount"))
@@ -3489,7 +3489,7 @@ def _string(text):
         
         return text.encode("utf-8")
 
-def _collect_nodes(limit, sender, method_name, cacheable, params=None):
+def _collect_nodes(limit, sender, method_name, cacheable, params=None, resume=True):
     """
         Returns a sequence of dom.Node objects about as close to
         limit as possible
@@ -3506,10 +3506,25 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
     print("method_name:", method_name)
     print("params:", params)
     print("limit:", limit)
+    print("resume:", resume)
+    fpath = '../.lastfm_{m}_cache'.format(m=method_name)
+    try:
+        f = open(fpath, 'rt')
+        if resume:
+            page = int(f.read())
+        f.close()
+        print("Resuming from: " + str(page))
+    except:
+        print("Cache file does not exist: " + fpath)
+
+    f = open(fpath, 'wt')
     counter = 0
     while not end_of_pages and (not limit or (limit and counter < limit)):
         try:
             params["page"] = str(page)
+            f.write(str(page))
+            print("page:", page)
+
             doc = sender._request(method_name, cacheable, params)
 
             main = doc.documentElement.childNodes[1]
@@ -3536,6 +3551,8 @@ def _collect_nodes(limit, sender, method_name, cacheable, params=None):
             end_of_pages = True
 
         page += 1
+    # Close file
+    f.close()
 
 def _extract(node, name, index = 0):
     """Extracts a value from the xml string"""
